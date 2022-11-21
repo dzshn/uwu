@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "uwu"
+version = "0.1.0"
+description = ":3 *gwabs u and eats ur eyes liek grapez*"
+authors = ["Sofia N. Lima <me@dzshn.xyz>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "~3.10"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
