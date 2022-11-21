@@ -7,7 +7,7 @@ import sys
 import types
 from collections.abc import Container
 from typing import Any, Literal, Union
-from opcode import cmp_op, opmap as om, opname
+from opcode import cmp_op, opmap as om, opname, hasjabs, hasjrel
 
 
 class Match(abc.ABC):
@@ -110,6 +110,8 @@ if not match_code(code, 0, HEADER):
 
 i = len(HEADER)
 new_code = bytearray([om["NOP"], 69] * (i // 2) + [om["POP_TOP"], 0])
+labels = {}
+jumps = {}
 while i < len(bytecode):
     if nop := match_code(code, i, [
         om["LOAD_NAME"], Name("o"),
@@ -168,8 +170,16 @@ while i < len(bytecode):
                 om["LOAD_NAME"], Always(),
                 om["BINARY_MATRIX_MULTIPLY"], 0,
             ]):
-                new_code.append(om[code.co_names[segment[1]]])
-                new_code.append(segment[3])
+                op = om[code.co_names[segment[1]]]
+                value = segment[3]
+                if op in hasjabs or op in hasjrel:
+                    label = code.co_names[value]
+                    if (value := labels.get(label)) is None:
+                        value = 0
+                        jumps.setdefault(label, set())
+                        jumps[label].add(len(new_code))
+                new_code.append(op)
+                new_code.append(value)
                 j += len(segment)
             elif segment := match_code(code, j, [
                 om["LOAD_NAME"], Always(),
@@ -179,7 +189,7 @@ while i < len(bytecode):
                 op = om[code.co_names[segment[1]]]
                 value = code.co_consts[segment[3]]
                 if op == om["COMPARE_OP"]:
-                    value = cmp_op.index(op)
+                    value = cmp_op.index(value)
                 new_code.append(op)
                 new_code.append(value)
                 j += len(segment)
@@ -194,6 +204,24 @@ while i < len(bytecode):
             else:
                 explod("invalid code")
         i = j + 4
+    elif label := match_code(code, i, [
+        om["LOAD_NAME"], Name("o"),
+        om["LOAD_NAME"], Name("w"),
+        om["BINARY_XOR"], 0,
+        om["LOAD_NAME"], Name("o"),
+        om["BINARY_XOR"], 0,
+        om["LOAD_NAME"], Always(),
+        om["BINARY_TRUE_DIVIDE"], 0,
+        om["POP_TOP"], 0,
+    ]):
+        target = len(new_code) // 2
+        labels[code.co_names[label[-5]]] = target
+        for x in jumps.get(code.co_names[label[-5]], set()):
+            if new_code[x] in hasjrel:
+                new_code[x + 1] = target - x // 2 - 1
+            else:
+                new_code[x + 1] = target
+        i += len(label)
     else:
         new_code.append(bytecode[i])
         new_code.append(bytecode[i+1])
