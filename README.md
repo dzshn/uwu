@@ -41,6 +41,13 @@ The [examples](examples/) folder contains a few scripts showing off all features
 -   manually access the stack without popping a value with `STACK[x]`
 -   mix in as much normal code as you want! (subject to inexplicable segfaulting)
 
+## TODO
+
+- [ ] also patch functions
+- [ ] more instructions for common opcodes
+- [ ] maybe mnemonics for opcodes in `(o//w//o)`?
+- [ ] also inject silly raw memory manipulation functions
+
 ## wait, what
 
 good question!
