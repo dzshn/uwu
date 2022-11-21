@@ -6,7 +6,7 @@ import re
 import sys
 import types
 from collections.abc import Container
-from typing import Any, Literal
+from typing import Any, Literal, Union
 from opcode import cmp_op, opmap as om, opname
 
 
@@ -31,7 +31,7 @@ class Const(Match):
 
 @dataclasses.dataclass
 class Name(Match):
-    value: str | re.Pattern
+    value: Union[str, re.Pattern]
     scope: Literal["cellvars", "freevars", "names", "varnames"] = "names"
 
     def matches(self, code, index) -> bool:
@@ -47,7 +47,7 @@ class Name(Match):
 
 @dataclasses.dataclass
 class Op(Match):
-    value: str | re.Pattern
+    value: Union[str, re.Pattern]
 
     def matches(self, code, index) -> bool:
         op = opname[code.co_code[index]]
