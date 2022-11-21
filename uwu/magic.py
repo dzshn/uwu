@@ -9,6 +9,8 @@ from collections.abc import Container
 from typing import Any, Literal, Union
 from opcode import cmp_op, opmap as om, opname, hasjabs, hasjrel
 
+from uwu.stack import Stack
+
 
 class Match(abc.ABC):
     @abc.abstractmethod
@@ -236,3 +238,4 @@ start = object.__basicsize__
 arr = ctypes.c_ubyte * (new_code.__sizeof__() - start)
 arr.from_address(id(bytecode) + start)[:] = arr.from_address(id(new_code) + start)
 
+frame.f_locals["STACK"] = Stack(frame)
