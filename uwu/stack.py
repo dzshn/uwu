@@ -1,10 +1,10 @@
 import ctypes
-import sys
+import types
 from collections.abc import Sequence
 
 
 class Stack(Sequence):
-    def __init__(self, frame):
+    def __init__(self, frame: types.FrameType):
         self.address = id(frame) + ctypes.sizeof(ctypes.c_void_p) * 44
         self.size = frame.f_code.co_stacksize
 
@@ -28,4 +28,3 @@ class Stack(Sequence):
 
     def __len__(self) -> int:
         return self.size
-

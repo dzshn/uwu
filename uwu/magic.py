@@ -1,11 +1,9 @@
 import abc
 import ctypes
 import dataclasses
-import gc
 import re
 import sys
 import types
-from collections.abc import Container
 from typing import Any, Literal, Union
 from opcode import cmp_op, opmap as om, opname, hasjabs, hasjrel
 
@@ -14,7 +12,7 @@ from uwu.stack import Stack
 
 class Match(abc.ABC):
     @abc.abstractmethod
-    def matches(self, code, index) -> bool:
+    def matches(self, code: types.CodeType, index: int) -> bool:
         ...
 
 
@@ -22,7 +20,7 @@ class Match(abc.ABC):
 class Const(Match):
     value: Any
 
-    def matches(self, code, index) -> bool:
+    def matches(self, code: types.CodeType, index: int) -> bool:
         try:
             const = code.co_consts[code.co_code[index]]
             return type(const) is type(self.value) and self.value == const
@@ -36,7 +34,7 @@ class Name(Match):
     value: Union[str, re.Pattern]
     scope: Literal["cellvars", "freevars", "names", "varnames"] = "names"
 
-    def matches(self, code, index) -> bool:
+    def matches(self, code: types.CodeType, index: int) -> bool:
         try:
             name = getattr(code, "co_" + self.scope)[code.co_code[index]]
             if isinstance(self.value, str):
@@ -51,7 +49,7 @@ class Name(Match):
 class Op(Match):
     value: Union[str, re.Pattern]
 
-    def matches(self, code, index) -> bool:
+    def matches(self, code: types.CodeType, index: int) -> bool:
         op = opname[code.co_code[index]]
         if isinstance(self.value, str):
             return op == self.value
@@ -59,7 +57,7 @@ class Op(Match):
 
 
 class Always(Match):
-    def matches(self, code, index) -> bool:
+    def matches(self, code: types.CodeType, index: int) -> bool:
         return True
 
 
@@ -78,14 +76,14 @@ HEADER = [
 ]
 
 
-def explod(message):
+def explod(message: str):
     print(message + ", explod", file=sys.stderr)
     ctypes.c_int.from_address(id(None)).value = 0
     # just in case you survive
     ctypes.c_int.from_address(1).value = 1
 
 
-def match_code(code, index, query):
+def match_code(code: types.CodeType, index: int, query: list[Match]):
     bc = code.co_code
     for i, x in enumerate(query):
         if isinstance(x, int):
