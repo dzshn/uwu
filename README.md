@@ -47,6 +47,8 @@ The [examples](examples/) folder contains a few scripts showing off all features
 - [ ] more instructions for common opcodes
 - [ ] maybe mnemonics for opcodes in `(o//w//o)`?
 - [ ] also inject silly raw memory manipulation functions
+- [ ] fix jump targets
+- [ ] use `EXTENDED_ARG` when necessary
 
 ## wait, what
 
