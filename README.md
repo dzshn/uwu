@@ -26,7 +26,7 @@ print(STACK[0])
 Install the project: (only dependency is python 3.9~3.10)
 
 ```
-$ pip install git+https://github.com/dzshn/ike
+$ pip install git+https://github.com/dzshn/uwu
 # or `py -m pip` etc
 ```
 
@@ -47,7 +47,7 @@ The [examples](examples/) folder contains a few scripts showing off all features
 - [ ] more instructions for common opcodes
 - [ ] maybe mnemonics for opcodes in `(o//w//o)`?
 - [ ] also inject silly raw memory manipulation functions
-- [ ] fix jump targets
+- [x] fix jump targets
 - [ ] use `EXTENDED_ARG` when necessary
 
 ## wait, what
