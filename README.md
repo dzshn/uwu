@@ -38,8 +38,11 @@ The [examples](examples/) folder contains a few scripts showing off all features
 -   store to any variable with `thing <(^w^ o)`
 -   insert arbitrary bytecode with `(o//w//o) [ OPERATOR @ARGUMENT ]`
 -   mark labels for jumping with `(o ^w^o)/ LABEL`
+-   delete a variable with `thing <(o -w-o)` (or the top-of-stack (or the entire stack))
 -   manually access the stack without popping a value with `STACK[x]`
+    - insert `DUP_TOP` anywhere with `~STACK`
 -   mix in as much normal code as you want! (subject to inexplicable segfaulting)
+-   seriously, even using `if` or `while` or `for`
 
 ## TODO
 
@@ -49,6 +52,7 @@ The [examples](examples/) folder contains a few scripts showing off all features
 - [ ] also inject silly raw memory manipulation functions
 - [x] fix jump targets
 - [ ] use `EXTENDED_ARG` when necessary
+- [ ] also detect `*_SUBSCR`
 
 ## wait, what
 

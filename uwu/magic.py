@@ -212,6 +212,38 @@ def insanity(code: types.CodeType) -> bytes:
                 else:
                     new_code[x + 1] = target
             i += len(label)
+        elif delete := match_code(code, i, [
+            LOAD_NAME, Always(),
+            LOAD_NAME, Name("o"),
+            LOAD_NAME, Name("w"),
+            BINARY_SUBTRACT, 0,
+            LOAD_NAME, Name("o"),
+            BINARY_SUBTRACT, 0,
+            COMPARE_OP, opcode.cmp_op.index("<"),
+            POP_TOP, 0,
+        ]):
+            new_code.append(opcode.opmap[opcode.opname[delete[0]].replace("LOAD_", "DELETE_")])
+            new_code.append(delete[1])
+            i += len(delete)
+        elif pop_top := match_code(code, i, [
+            LOAD_NAME, Name("STACK"),
+            UNARY_INVERT, 0,
+            LOAD_NAME, Name("o"),
+            LOAD_NAME, Name("w"),
+            BINARY_SUBTRACT, 0,
+            LOAD_NAME, Name("o"),
+            BINARY_SUBTRACT, 0,
+            COMPARE_OP, opcode.cmp_op.index("<"),
+            POP_TOP, 0,
+        ]):
+            new_code.extend([POP_TOP, 0])
+            i += len(pop_top)
+        elif dup_top := match_code(code, i, [
+            LOAD_NAME, Name("STACK"),
+            UNARY_INVERT, 0,
+        ]):
+            new_code.extend([DUP_TOP, 0])
+            i += len(dup_top)
         else:
             op = bytecode[i]
             arg = bytecode[i+1]
