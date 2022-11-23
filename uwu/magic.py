@@ -95,6 +95,7 @@ def insanity(code: types.CodeType) -> bytes:
     labels = {}
     jumps = {}
     broken_targets = {}
+    deltas = {}
     while i < len(bytecode):
         if nop := match_code(code, i, [
             LOAD_NAME, Name("o"),
@@ -245,19 +246,23 @@ def insanity(code: types.CodeType) -> bytes:
             new_code.extend([DUP_TOP, 0])
             i += len(dup_top)
         else:
+            deltas[i] = i - len(new_code)
             op = bytecode[i]
             arg = bytecode[i+1]
             for x in broken_targets.get(i, set()):
                 if new_code[x] in opcode.hasjrel:
-                    new_code[x] = len(new_code) - x
+                    new_code[x + 1] = (len(new_code) - x) // 2 - 1
                 else:
                     new_code[x + 1] -= (i - len(new_code)) // 2
             if op in opcode.hasjabs or op in opcode.hasjrel:
                 target = arg * 2
                 if op in opcode.hasjrel:
                     target += i + 2
-                broken_targets.setdefault(target, set())
-                broken_targets[target].add(len(new_code))
+                if target <= i:
+                    arg -= deltas[target] // 2
+                else:
+                    broken_targets.setdefault(target, set())
+                    broken_targets[target].add(len(new_code))
             new_code.append(op)
             new_code.append(arg)
             i += 2
