@@ -65,7 +65,7 @@ are valid syntax and easy to spot in the compiled bytecode. since everything is
 perfectly valid syntax, all the magic can be done when `uwu.magic` is imported:
 after finding the correct frame (i.e. the interpreter's state object), the
 *compiled bytecode* is scanned, and new bytecode is generated according to
-the specification, leaving "usual" code is left as-is. then, using `ctypes`,
-the `bytes` object at the frame's memory is overwritten by our own and, when
-execution is resumed (`uwu.magic` is finished), the interpreter will be running
-the new bytecode, completely clueless about our changes
+the specification, leaving "usual" code as-is. then, using `ctypes`, the `bytes`
+object at the frame's memory is overwritten by our own and, when execution is
+resumed (`uwu.magic` is finished), the interpreter will be running the new bytecode,
+completely clueless about our changes
